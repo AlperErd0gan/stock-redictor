@@ -25,21 +25,34 @@ class StockApp(tk.Tk):
     def show_frame(self, page_class):
         frame = self.frames[page_class]
         frame.tkraise()
+      # Varsayılan sistem rengi
+
+def on_enter(e):
+         e.widget['background'] = '#dcdcdc'  # Açık gri
+
+def on_leave(e):
+        e.widget['background'] = 'SystemButtonFace'
 
 
 class MainMenu(tk.Frame):
+ 
+        
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        title = tk.Label(self, text="Main Menu", font=("Helvetica", 20))
+        title = tk.Label(self, text="Prediction of MSFT stock", font=("Helvetica", 20))
         title.pack(pady=30)
 
         btn1 = tk.Button(self, text="Visualize Prediction", command=lambda: controller.show_frame(PlotPage), width=30)
         btn1.pack(pady=10)
+        btn1.bind("<Enter>", on_enter)
+        btn1.bind("<Leave>", on_leave)
 
         btn2 = tk.Button(self, text="Predict Next Day", command=lambda: controller.show_frame(PredictionPage), width=30)
         btn2.pack(pady=10)
+        btn2.bind("<Enter>", on_enter)
+        btn2.bind("<Leave>", on_leave)
 
 
 class PlotPage(tk.Frame):
@@ -47,11 +60,9 @@ class PlotPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # Configure grid layout for dynamic resizing
         self.grid_rowconfigure(1, weight=1) 
         self.grid_columnconfigure(0, weight=1)  
 
-        # top frame for back button
         top_frame = tk.Frame(self)
         top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
@@ -61,21 +72,19 @@ class PlotPage(tk.Frame):
         plot_frame = tk.Frame(self)
         plot_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
 
-        fig, ax = plt.subplots(figsize=(7, 4), dpi=100)
-        ax.plot(example_real, label='Real Prices', color='blue')
-        ax.plot(example_predicted, label='Predicted Prices', color='orange', linestyle='--')
-        ax.set_title("Stock Price Prediction")
+        fig, ax = plt.subplots(figsize=(7, 4), dpi=100,constrained_layout=True)
+        ax.plot(example_real, label='Real Prices', color='blue', linewidth=2)
+        ax.plot(example_predicted, label='Predicted Prices', color='orange', linestyle='--', linewidth=2)
+        ax.set_title("Stock Price Prediction", fontsize=14)
         ax.set_xlabel("Days")
         ax.set_ylabel("Price (USD)")
-        ax.legend()
+        ax.legend(loc='lower right')
         ax.grid(True)
-        fig.tight_layout()
-
        
+
         canvas = FigureCanvasTkAgg(fig, master=plot_frame)
         canvas.draw()
         canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack(fill='both', expand=True)
         canvas_widget.pack(fill='both', expand=True)
 
 
